@@ -1,0 +1,31 @@
+'''
+爱丽丝参与一个大致基于纸牌游戏 “21点” 规则的游戏，描述如下：
+
+爱丽丝以 0 分开始，并在她的得分少于 K 分时抽取数字。 抽取时，她从 [1, W] 的范围中随机获得一个整数作为分数进行累计，其中 W 是整数。 每次抽取都是独立的，其结果具有相同的概率。
+
+当爱丽丝获得不少于 K 分时，她就停止抽取数字。 爱丽丝的分数不超过 N 的概率是多少？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/new-21-game
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+'''
+这道题可以用逆向动态规划算法
+不妨设dp[i]表示：当当前分数为i时，总分数不超过N的概率，当###k<=x<=min(N,K+W-1) dp(x)==1
+##x>min(N,K+W-1) dp(x)==0
+
+且有dp[i]=sum(dp[i+1:i+W+1]])/W
+这种做法会导致超时，因此可以相邻项相减，降低复杂度。
+
+
+
+
+
+class Solution:
+    def new21Game(self, N: int, K: int, W: int) -> float:
+        dp=[0 for _ in range(K+W)]
+        for j in range(K,min(N,K+W-1)+1):
+            dp[j]=1
+        dp[K - 1] = float(min(N - K + 1, W)) / W
+        for i in range(K - 2, -1, -1):
+            dp[i] = dp[i + 1] - (dp[i + W + 1] - dp[i + 1]) / W
+        return dp[0]
